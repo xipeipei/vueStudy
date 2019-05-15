@@ -1,0 +1,40 @@
+@import "./reset.less";
+@import "./variable.less";
+@import "./iconfont.less";
+@import "./atom.less";
+@import "./custom.less";
+body,
+html {
+  .f-family();
+  .bg-light-grey();
+  overflow: auto;
+  .fc(#444a55);
+  * {
+    box-sizing: border-box;
+    .f(14px);
+  }
+}
+::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #b6becf;
+}
+:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #b6becf;
+}
+::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #b6becf;
+}
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #b6becf;
+}
+/* 清除谷歌浏览器下的 search 叉号 */
+input::-webkit-search-cancel-button {
+  display: none;
+}
+/* 清除IE下的 search 叉号 */
+input[type="text"]::-ms-clear {
+  display: none;
+}
