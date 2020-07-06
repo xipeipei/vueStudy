@@ -1,8 +1,8 @@
 <template>
-  <div class="app-wrapper" :class="classObj">
+  <div class="app-wrapper">
     <!-- <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"></div> -->
-    <sidebar class="sidebar-container"></sidebar>
-    <div class="main-container">
+    <!-- <sidebar class="sidebar-container"></sidebar> -->
+    <div class="main-containercontainer">
       <navbar></navbar>
       <!-- <tags-view></tags-view>
       <app-main></app-main> -->
@@ -33,6 +33,25 @@ export default {
     //     mobile: this.device === 'mobile'
     //   }
     // }
+  },
+  mounted(){
+    // let json1 = {a:1, b:null}
+    // console.log(Object.assign({a:2,b:3},json1))
+    // let result = Object.assign({ position: '新西兰' }, null, undefined, { name: '张三' });
+    // console.log(result)
+    const cars = [
+      { model: 'renault', year: 1956 },
+      { model: 'peugeot', year: 1968 },
+      { model: 'ford', year: 1977 }
+    ];
+    const checkEveryModel = (model) => {
+      return cars.every(car => car.model === model);
+    }
+    // const checkEveryModel = (model) => {
+    //   return cars.find(car => car.model !== model) === undefined;
+    // }
+    console.log(checkEveryModel('renault'));
+    console.log(null==undefined)
   },
   methods: {
     // handleClickOutside() {
