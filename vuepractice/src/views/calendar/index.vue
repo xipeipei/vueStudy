@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="body">
-      <table class="month-table"  cellspacing="0" cellpadding="0" v-show="showMonth">
+      <div class="month-table"  cellspacing="0" cellpadding="0" v-show="showMonth">
         <thead>
           <th>Mon</th>
           <th>Tue</th>
@@ -26,10 +26,10 @@
           <th>Sat</th>
           <th>Sun</th>
         </thead>
-        <tbody>
+        <div class="body">
           <!-- 双重for循环生成 6 * 7 = 42 个日期格子 -->
-          <tr v-for="(week, weekIndex) in dates" v-bind:key="weekIndex">
-            <td v-for="(date, dateIndex) in dates[weekIndex]"
+          <div class="weekDay" v-for="(week, weekIndex) in dates" v-bind:key="weekIndex">
+            <div class="dayItem" v-for="(date, dateIndex) in dates[weekIndex]"
               v-bind:key="dateIndex"
               @mouseenter="dateMouseEnter(weekIndex, dateIndex)"
               @mouseleave="dateMouseLeave(weekIndex, dateIndex)">
@@ -38,10 +38,13 @@
               :class="[date.class, date.isAlive]">
                 <span>{{date.day}}</span>
               </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <div v-if="week.offsetL" :class="`scheduleItem offsetL${week.offsetL} spanLen${week.spanLen}`">
+              sdcsdcds
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- 生成一个周 时间列表 -->
       <table class="week-table"  cellspacing="0" cellpadding="0" v-show="!showMonth">
         <thead>
@@ -71,7 +74,6 @@
  
 <script>
 import moment from 'moment'
-import mockData from './mock.json'
 export default {
   data () {
     return {
@@ -82,11 +84,11 @@ export default {
       showMonth: true,
       weekList: [],
       headerContent: moment().format('YYYY-MM'),
-      currentWeekday: ''
+      currentWeekday: '',
+      dateArr: []
     }
   },
   mounted () {
-    console.log(this.mockData)
   },
   methods: {
     // 点击上个月 通过改变currentYearMonth来获取上个月的 YYYY-MM 格式
@@ -128,6 +130,7 @@ export default {
     },
     createCalendar () {
       this.dates = []
+      this.dateArr = []
       // 获取当月的一号是星期几 以便来生成上月的日期 填补够42个格子
       const monthFirstDay = moment(this.currentYearMonth + '-01', 'YYYY-MM-DD')
       // 获得一号与第一个格子内应该有的天数距离 这里需要注意的是 weekday 是从周日 为 0 开始的
@@ -135,9 +138,11 @@ export default {
       if (firstDayWeekday === 0) {
         firstDayWeekday = 7
       }
+      console.log(firstDayWeekday)
       let daysDistance = 1 - firstDayWeekday
       for (let weeks = 0; weeks < 6; weeks++) {
         this.dates.push([])
+        this.dateArr.push([])
         for (let weekday = 0; weekday < 7; weekday++) {
           // 该对象有两个属性 一个是class属性 还有一个就是日期
           let date = {}
@@ -154,11 +159,55 @@ export default {
           } else {
             date.class = 'not-current-month '
           }
+          // console.log(moment(date.day).format('YYYY-MM-DD'))
+          // 判断本周的周日是几号
+          
+          if (weekday === 6) {
+            // let dateArr = []
+            // dateArr.push([])
+            // dateArr[weeks].push(moment(date.day).format('YYYY-MM-DD'))
+            // console.log(date.day)
+            // console.log(moment(date.day).format('YYYY-MM-DD'))
+            // console.log(11111)
+            let json = require('./mock.json')
+            // console.log(dateArr)
+          }
+          console.log(moment(date.day).format('YYYY-MM-DD'))
+          // console.log(weeks)
+          // let dateArr = []
+          //   // dateArr.push([])
+          //   dateArr[weeks].push(moment(date.day).format('YYYY-MM-DD'))
+          //   console.log(dateArr)
+            // this.dateArr[weeks].push(moment(date.day).format('YYYY-MM-DD'))
+            // console.log(this.dateArr)
+          date.date = moment(date.day).format('YYYY-MM-DD')
           date.day = moment(date.day).format('DD')
+          
           this.dates[weeks].push(date)
           daysDistance++
         }
       }
+      let json = require('./mock.json')
+      console.log(this.dates)
+      for (let i in this.dates) {
+        this.dates[i].forEach((day) => {
+          json.forEach((item) => {
+            if (moment(moment(item.start).format('YYYY-MM-DD')).isSame(day.date) && !moment(moment(item.end).format('YYYY-MM-DD')).isSame(day.date)) {
+              this.dates[i].offsetL = parseInt(i) + 1
+              console.log(moment(moment(item.end).format('YYYY-MM-DD')).diff(moment(moment(item.start).format('YYYY-MM-DD')), 'days'))
+              let getDiff = moment(moment(item.end).format('YYYY-MM-DD')).diff(moment(moment(item.start).format('YYYY-MM-DD')), 'days')
+              this.dates[i].spanLen = getDiff > 7 - (parseInt(i) + 1) ? 7 - (parseInt(i) + 1) : getDiff
+            }
+            if (moment(moment(item.end).format('YYYY-MM-DD')).isSame(day.date) && !moment(moment(item.start).format('YYYY-MM-DD')).isSame(day.date)) {
+              this.dates[i].offsetL = parseInt(i) + 1
+              console.log(moment(moment(item.end).format('YYYY-MM-DD')).diff(moment(this.dates[i][0].date), 'days'))
+              let getDiff = moment(moment(item.end).format('YYYY-MM-DD')).diff(moment(moment(this.dates[i][0].date).format('YYYY-MM-DD')), 'days')
+              this.dates[i].spanLen = getDiff > 7 ? 7 : getDiff
+            }
+          })
+        })
+      }
+      console.log(this.dates)
     },
     createWeekList () {
       this.weekTableHeader = ['Mon ', 'Tue ', 'Wed ', 'Thu ', 'Fri ', 'Sat ', 'Sun ']
@@ -201,6 +250,59 @@ export default {
 </script>
  
 <style lang="less" scoped>
+.scheduleItem{
+  position: absolute;
+  border-radius: .5em;
+  height:20px;
+  top:20px;
+  background: lightblue;
+  &.offsetL1{
+    left:14.3%;;
+  }
+  &.offsetL2{
+    left:28.6%;
+  }
+  &.offsetL3{
+    left:42.9%;
+  }
+  &.offsetL4{
+    left:57.1%;
+  }
+  &.offsetL5{
+    left:71.4%;
+  }
+  &.offsetL6{
+    left:85.7%;
+  }
+  &.spanLen1{
+    width:14.3%;;
+  }
+  &.spanLen2{
+    width:28.6%;
+  }
+  &.spanLen3{
+    width:42.9%;
+  }
+  &.spanLen4{
+    width:57.1%;
+  }
+  &.spanLen5{
+    width:71.4%;
+  }
+  &.spanLen6{
+    width:85.7%;
+  }
+}
+.body{
+  .weekDay{
+    width: 100%;
+    display: -webkit-box;
+    position: relative;
+  }
+  .dayItem{
+    -webkit-box-flex: 1;
+  }
+}
 #parent {
   margin: 2rem auto;
   padding: 1rem;
@@ -228,6 +330,7 @@ tbody tr {
   display: table-row;
   vertical-align: inherit;
   border-color: inherit;
+  position: relative;
 }
 .month-table tbody td {
   vertical-align: inherit;
@@ -253,7 +356,7 @@ tbody tr {
 }
 .today {
   color: #F44E50;
-  background-color: #FFFF99;
+  // background-color: #;
 }
 .date-alive {
   background-color: rgb(252, 212, 215);
